@@ -77,20 +77,12 @@
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
         }
         .bank-select {
-            margin-bottom: 15px;
-        }
-        .bank-select label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-        .bank-select select {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
+            /* ... */
         }
         .amount-buttons {
             display: grid;
@@ -126,20 +118,38 @@
             border-radius: 4px;
             flex-grow: 1;
         }
-        #add-btn {
-            background-color: #00c853;
-            color: white;
+        .controls {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+        .controls button {
             padding: 10px 15px;
             border: none;
             border-radius: 4px;
             cursor: pointer;
             font-size: 1em;
-            display: block;
-            margin-top: 15px;
-            width: 100%;
+        }
+        #add-btn {
+            background-color: #00c853;
+            color: white;
         }
         #add-btn:hover {
             background-color: #009640;
+        }
+        #reset-btn {
+            background-color: #dc3545;
+            color: white;
+        }
+        #reset-btn:hover {
+            background-color: #c82333;
+        }
+        #save-btn {
+            background-color: #ffc107;
+            color: #212529;
+        }
+        #save-btn:hover {
+            background-color: #e0a800;
         }
         #selections-summary {
             margin-top: 20px;
@@ -225,6 +235,11 @@
                     <option value="3">3</option>
                 </select>
             </div>
+        </div>
+
+        <div class="controls">
+            <button id="reset-btn">重設</button>
+            <button id="save-btn">儲存</button>
             <button id="add-btn">新增至總計</button>
         </div>
 
@@ -240,6 +255,8 @@
         const amountButtons = document.querySelectorAll('.amount-buttons button');
         const quantitySelect = document.getElementById('quantity-select');
         const addBtn = document.getElementById('add-btn');
+        const resetBtn = document.getElementById('reset-btn');
+        const saveBtn = document.getElementById('save-btn');
         const totalAmountDiv = document.getElementById('total-amount');
         const selectionsSummaryDiv = document.getElementById('selections-summary');
         const selectionsListUl = document.getElementById('selections-list');
@@ -267,6 +284,59 @@
         };
         const currentSelections = [];
 
+        // 載入儲存的數據
+        function loadSavedData() {
+            const savedTotalAmount = localStorage.getItem('totalAmount');
+            const savedBankTotals = localStorage.getItem('bankTotals');
+            const savedBankCouponCounts = localStorage.getItem('bankCouponCounts');
+            const savedSelections = localStorage.getItem('currentSelections');
+
+            if (savedTotalAmount) {
+                totalAmount = parseInt(savedTotalAmount);
+                totalAmountDiv.innerText = `${totalAmount} 元`;
+            }
+            if (savedBankTotals) {
+                Object.assign(bankTotals, JSON.parse(savedBankTotals));
+                updateBankBalanceBars();
+            }
+            if (savedBankCouponCounts) {
+                Object.assign(bankCouponCounts, JSON.parse(savedBankCouponCounts));
+            }
+            if (savedSelections) {
+                currentSelections.push(...JSON.parse(savedSelections));
+                updateSelectionsSummary();
+            }
+        }
+
+        // 儲存數據
+        function saveData() {
+            localStorage.setItem('totalAmount', totalAmount);
+            localStorage.setItem('bankTotals', JSON.stringify(bankTotals));
+            localStorage.setItem('bankCouponCounts', JSON.stringify(bankCouponCounts));
+            localStorage.setItem('currentSelections', JSON.stringify(currentSelections));
+            alert('數據已儲存！');
+        }
+
+        // 重設所有數據
+        function resetData() {
+            totalAmount = 0;
+            for (const bank in bankTotals) {
+                bankTotals[bank] = 0;
+                bankCouponCounts[bank] = 0;
+            }
+            currentSelections.length = 0; // 清空陣列
+            totalAmountDiv.innerText = '0 元';
+            updateBankBalanceBars();
+            updateSelectionsSummary();
+            bankSelect.value = '';
+            amountSelection.style.display = 'none';
+            selectedAmount = 0;
+            quantitySelect.value = '1';
+            amountButtons.forEach(button => button.classList.remove('selected'));
+            localStorage.clear(); // 可選：清除所有本地儲存的數據
+            alert('數據已重設！');
+        }
+
         bankSelect.addEventListener('change', function() {
             selectedBank = this.value;
             if (selectedBank) {
@@ -274,7 +344,7 @@
             } else {
                 amountSelection.style.display = 'none';
                 selectedAmount = 0;
-                quantitySelect.value = 0;
+                quantitySelect.value = '1';
                 amountButtons.forEach(button => button.classList.remove('selected'));
             }
         });
@@ -301,8 +371,7 @@
 
             if (currentBankCouponCount + quantityToAdd > 3) {
                 alert(`"${selectedBank}" 最多只能選擇 3 張消費券。目前已選擇 ${currentBankCouponCount} 張，本次只能再選擇 ${3 - currentBankCouponCount} 張。`);
-                // Optionally reset the quantity select if the user tried to add too many
-                quantitySelect.value = Math.max(0, 3 - currentBankCouponCount);
+                quantitySelect.value = Math.max(1, 3 - currentBankCouponCount).toString();
                 return;
             }
 
@@ -322,8 +391,6 @@
             });
 
             updateSelectionsSummary();
-
-            // Do not reset the selection fields
         });
 
         function updateBankBalanceBars() {
@@ -357,6 +424,12 @@
                 selectionsSummaryDiv.style.display = 'none';
             }
         }
+
+        resetBtn.addEventListener('click', resetData);
+        saveBtn.addEventListener('click', saveData);
+
+        // 頁面載入時載入儲存的數據
+        loadSavedData();
     </script>
 </body>
 </html>
