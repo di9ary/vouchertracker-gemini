@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>消費券管理</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        h1 {
+            text-align: center;
+            color: #007bff;
+            margin-bottom: 20px;
+        }
+        h2 {
+            color: #007bff;
+            margin-top: 20px;
+        }
+        #total-amount-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        #total-amount-label {
+            font-size: 1.2em;
+            color: #555;
+        }
+        #total-amount {
+            font-weight: bold;
+            font-size: 1.8em;
+            color: #28a745;
+            background-color: #e9ecef;
+            padding: 10px 20px;
+            border-radius: 8px;
+            display: inline-block;
+        }
+        .balance-container {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+            background-color: #fff;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .bank-balance {
+            text-align: center;
+        }
+        .bar-container {
+            background-color: #ddd;
+            height: 100px;
+            width: 80px;
+            margin: 5px auto;
+            border-radius: 5px 5px 0 0;
+            display: flex;
+            flex-direction: column-reverse;
+            overflow: hidden;
+        }
+        .bar {
+            background-color: #007bff;
+            color: white;
+            text-align: center;
+            line-height: 20px;
+            font-size: 0.8em;
+        }
+        .bank-name {
+            margin-top: 5px;
+            font-size: 0.9em;
+            color: #555;
+        }
+        .selection-container {
+            background-color: #fff;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        .bank-select {
+            margin-bottom: 15px;
+        }
+        .bank-select label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .bank-select select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .amount-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
+            gap: 5px;
+            margin-bottom: 10px;
+        }
+        .amount-buttons button {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9em;
+            background-color: #007bff;
+            color: white;
+        }
+        .amount-buttons button.selected {
+            background-color: #28a745;
+        }
+        .quantity-select {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .quantity-select label {
+            margin-right: 10px;
+            font-weight: bold;
+            min-width: 60px;
+        }
+        .quantity-select select {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            flex-grow: 1;
+        }
+        #add-btn {
+            background-color: #00c853;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1em;
+            display: block;
+            margin-top: 15px;
+            width: 100%;
+        }
+        #add-btn:hover {
+            background-color: #009640;
+        }
+        #selections-summary {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background-color: #f9f9f9;
+        }
+        #selections-summary h3 {
+            margin-top: 0;
+            color: #007bff;
+        }
+        .selection-item {
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>消費券管理</h1>
+
+    <div id="total-amount-container">
+        <div id="total-amount-label">總金額：</div>
+        <div id="total-amount">0 元</div>
+    </div>
+
+    <h2>各銀行消費券金額</h2>
+    <div class="balance-container">
+        <div class="bank-balance" id="mpay-balance">
+            <div class="bar-container">
+                <div class="bar" style="height: 0%;">0</div>
+            </div>
+            <div class="bank-name">Mpay</div>
+        </div>
+        <div class="bank-balance" id="boc-balance">
+            <div class="bar-container">
+                <div class="bar" style="height: 0%;">0</div>
+            </div>
+            <div class="bank-name">中銀</div>
+        </div>
+        <div class="bank-balance" id="icbc-balance">
+            <div class="bar-container">
+                <div class="bar" style="height: 0%;">0</div>
+            </div>
+            <div class="bank-name">工商</div>
+        </div>
+        <div class="bank-balance" id="taifung-balance">
+            <div class="bar-container">
+                <div class="bar" style="height: 0%;">0</div>
+            </div>
+            <div class="bank-name">大豐</div>
+        </div>
+    </div>
+
+    <h2>選擇消費券</h2>
+    <div class="selection-container">
+        <div class="bank-select">
+            <label for="bank-select">選擇銀行：</label>
+            <select id="bank-select">
+                <option value="">請選擇銀行</option>
+                <option value="mpay">Mpay</option>
+                <option value="boc">中銀</option>
+                <option value="icbc">工商</option>
+                <option value="taifung">大豐</option>
+            </select>
+        </div>
+
+        <div id="amount-selection" style="display: none;">
+            <label>選擇金額：</label>
+            <div class="amount-buttons">
+                <button data-amount="10">10</button>
+                <button data-amount="20">20</button>
+                <button data-amount="30">30</button>
+                <button data-amount="50">50</button>
+                <button data-amount="100">100</button>
+                <button data-amount="150">150</button>
+                <button data-amount="200">200</button>
+            </div>
+            <div class="quantity-select">
+                <label for="quantity-select">數量：</label>
+                <select id="quantity-select">
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                </select>
+            </div>
+            <button id="add-btn">新增至總計</button>
+        </div>
+
+        <div id="selections-summary" style="display: none;">
+            <h3>已選取的消費券：</h3>
+            <ul id="selections-list"></ul>
+        </div>
+    </div>
+
+    <script>
+        const bankSelect = document.getElementById('bank-select');
+        const amountSelection = document.getElementById('amount-selection');
+        const amountButtons = document.querySelectorAll('.amount-buttons button');
+        const quantitySelect = document.getElementById('quantity-select');
+        const addBtn = document.getElementById('add-btn');
+        const totalAmountDiv = document.getElementById('total-amount');
+        const selectionsSummaryDiv = document.getElementById('selections-summary');
+        const selectionsListUl = document.getElementById('selections-list');
+        const bankBalanceBars = {
+            mpay: document.querySelector('#mpay-balance .bar'),
+            boc: document.querySelector('#boc-balance .bar'),
+            icbc: document.querySelector('#icbc-balance .bar'),
+            taifung: document.querySelector('#taifung-balance .bar')
+        };
+
+        let selectedBank = '';
+        let selectedAmount = 0;
+        let totalAmount = 0;
+        const bankTotals = {
+            mpay: 0,
+            boc: 0,
+            icbc: 0,
+            taifung: 0
+        };
+        const bankCouponCounts = {
+            mpay: 0,
+            boc: 0,
+            icbc: 0,
+            taifung: 0
+        };
+        const currentSelections = [];
+
+        bankSelect.addEventListener('change', function() {
+            selectedBank = this.value;
+            if (selectedBank) {
+                amountSelection.style.display = 'block';
+            } else {
+                amountSelection.style.display = 'none';
+                selectedAmount = 0;
+                quantitySelect.value = 0;
+                amountButtons.forEach(button => button.classList.remove('selected'));
+            }
+        });
+
+        amountButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                amountButtons.forEach(btn => btn.classList.remove('selected'));
+                this.classList.add('selected');
+                selectedAmount = parseInt(this.dataset.amount);
+            });
+        });
+
+        addBtn.addEventListener('click', function() {
+            if (!selectedBank) {
+                alert('請選擇銀行。');
+                return;
+            }
+            if (selectedAmount === 0) {
+                alert('請選擇消費券金額。');
+                return;
+            }
+            const quantityToAdd = parseInt(quantitySelect.value);
+            const currentBankCouponCount = bankCouponCounts[selectedBank];
+
+            if (currentBankCouponCount + quantityToAdd > 3) {
+                alert(`"${selectedBank}" 最多只能選擇 3 張消費券。目前已選擇 ${currentBankCouponCount} 張，本次只能再選擇 ${3 - currentBankCouponCount} 張。`);
+                // Optionally reset the quantity select if the user tried to add too many
+                quantitySelect.value = Math.max(0, 3 - currentBankCouponCount);
+                return;
+            }
+
+            const itemTotal = selectedAmount * quantityToAdd;
+            totalAmount += itemTotal;
+            totalAmountDiv.innerText = `${totalAmount} 元`;
+
+            bankTotals[selectedBank] += itemTotal;
+            bankCouponCounts[selectedBank] += quantityToAdd;
+            updateBankBalanceBars();
+
+            currentSelections.push({
+                bank: selectedBank,
+                amount: selectedAmount,
+                quantity: quantityToAdd,
+                total: itemTotal
+            });
+
+            updateSelectionsSummary();
+
+            // Do not reset the selection fields
+        });
+
+        function updateBankBalanceBars() {
+            let maxTotal = 0;
+            for (const bank in bankTotals) {
+                if (bankTotals.hasOwnProperty(bank)) {
+                    maxTotal = Math.max(maxTotal, bankTotals[bank]);
+                }
+            }
+
+            for (const bank in bankTotals) {
+                if (bankTotals.hasOwnProperty(bank) && bankBalanceBars[bank]) {
+                    const percentage = maxTotal > 0 ? (bankTotals[bank] / maxTotal) * 100 : 0;
+                    bankBalanceBars[bank].style.height = `${percentage}%`;
+                    bankBalanceBars[bank].innerText = bankTotals[bank];
+                }
+            }
+        }
+
+        function updateSelectionsSummary() {
+            if (currentSelections.length > 0) {
+                selectionsSummaryDiv.style.display = 'block';
+                selectionsListUl.innerHTML = '';
+                currentSelections.forEach(selection => {
+                    const listItem = document.createElement('li');
+                    listItem.classList.add('selection-item');
+                    listItem.innerText = `${selection.bank}: ${selection.amount} 元 x ${selection.quantity} 張 = ${selection.total} 元`;
+                    selectionsListUl.appendChild(listItem);
+                });
+            } else {
+                selectionsSummaryDiv.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>
