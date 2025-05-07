@@ -5,167 +5,179 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>消費券管理</title>
     <style>
-        body {
-            font-family: sans-serif;
-            margin: 20px;
-            background-color: #f4f4f4;
-            color: #333;
-        }
-        h1 {
-            text-align: center;
-            color: #007bff;
-            margin-bottom: 20px;
-        }
-        h2 {
-            color: #007bff;
-            margin-top: 20px;
-        }
-        #total-amount-container {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        #total-amount-label {
-            font-size: 1.2em;
-            color: #555;
-        }
-        #total-amount {
-            font-weight: bold;
-            font-size: 1.8em;
-            color: #28a745;
-            background-color: #e9ecef;
-            padding: 10px 20px;
-            border-radius: 8px;
-            display: inline-block;
-        }
-        .balance-container {
-            display: flex;
-            justify-content: space-around;
-            margin-bottom: 20px;
-            background-color: #fff;
-            padding: 15px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-        .bank-balance {
-            text-align: center;
-        }
-        .bar-container {
-            background-color: #ddd;
-            height: 100px;
-            width: 80px;
-            margin: 5px auto;
-            border-radius: 5px 5px 0 0;
-            display: flex;
-            flex-direction: column-reverse;
-            overflow: hidden;
-        }
-        .bar {
-            background-color: #007bff;
-            color: white;
-            text-align: center;
-            line-height: 20px;
-            font-size: 0.8em;
-        }
-        .bank-name {
-            margin-top: 5px;
-            font-size: 0.9em;
-            color: #555;
-        }
-        .selection-container {
-            background-color: #fff;
-            padding: 15px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            margin-bottom: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-        .bank-select {
-            /* ... */
-        }
-        .amount-buttons {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
-            gap: 5px;
-            margin-bottom: 10px;
-        }
-        .amount-buttons button {
-            padding: 8px 12px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 0.9em;
-            background-color: #007bff;
-            color: white;
-        }
-        .amount-buttons button.selected {
-            background-color: #28a745;
-        }
-        .quantity-select {
-            display: flex;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-        .quantity-select label {
-            margin-right: 10px;
-            font-weight: bold;
-            min-width: 60px;
-        }
-        .quantity-select select {
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            flex-grow: 1;
-        }
-        .controls {
-            display: flex;
-            gap: 10px;
-            justify-content: flex-end;
-        }
-        .controls button {
-            padding: 10px 15px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 1em;
-        }
-        #add-btn {
-            background-color: #00c853;
-            color: white;
-        }
-        #add-btn:hover {
-            background-color: #009640;
-        }
-        #reset-btn {
-            background-color: #dc3545;
-            color: white;
-        }
-        #reset-btn:hover {
-            background-color: #c82333;
-        }
-        #save-btn {
-            background-color: #ffc107;
-            color: #212529;
-        }
-        #save-btn:hover {
-            background-color: #e0a800;
-        }
-        #selections-summary {
-            margin-top: 20px;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            background-color: #f9f9f9;
-        }
-        #selections-summary h3 {
-            margin-top: 0;
-            color: #007bff;
-        }
-        .selection-item {
-            margin-bottom: 5px;
-        }
-    </style>
+    body {
+        font-family: sans-serif;
+        margin: 20px;
+        background-color: #f4f4f4;
+        color: #333;
+    }
+    h1 {
+        text-align: center;
+        color: #007bff;
+        margin-bottom: 20px;
+    }
+    h2 {
+        color: #007bff;
+        margin-top: 20px;
+    }
+    #total-amount-container {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+    #total-amount-label {
+        font-size: 1.2em;
+        color: #555;
+    }
+    #total-amount {
+        font-weight: bold;
+        font-size: 1.8em;
+        color: #28a745;
+        background-color: #e9ecef;
+        padding: 10px 20px;
+        border-radius: 8px;
+        display: inline-block;
+    }
+    .balance-container {
+        display: flex;
+        justify-content: space-around;
+        margin-bottom: 20px;
+        background-color: #fff;
+        padding: 15px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    .bank-balance {
+        text-align: center;
+    }
+    .bar-container {
+        background-color: #ddd;
+        height: 100px;
+        width: 80px;
+        margin: 5px auto;
+        border-radius: 5px 5px 0 0;
+        display: flex;
+        flex-direction: column-reverse;
+        overflow: hidden;
+    }
+    .bar {
+        color: white;
+        text-align: center;
+        line-height: 20px;
+        font-size: 0.8em;
+    }
+    .bar.mpay {
+        background-color: orange;
+    }
+    .bar.boc {
+        background-color: red;
+    }
+    .bar.icbc {
+        background-color: blue;
+    }
+    .bar.taifung {
+        background-color: yellow;
+        color: #333; /* 調整文字顏色以適應黃色背景 */
+    }
+    .bank-name {
+        margin-top: 5px;
+        font-size: 0.9em;
+        color: #555;
+    }
+    .selection-container {
+        background-color: #fff;
+        padding: 15px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+    .bank-select {
+        /* ... */
+    }
+    .amount-buttons {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
+        gap: 5px;
+        margin-bottom: 10px;
+    }
+    .amount-buttons button {
+        padding: 8px 12px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 0.9em;
+        background-color: #007bff;
+        color: white;
+    }
+    .amount-buttons button.selected {
+        background-color: #28a745;
+    }
+    .quantity-select {
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+    .quantity-select label {
+        margin-right: 10px;
+        font-weight: bold;
+        min-width: 60px;
+    }
+    .quantity-select select {
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        flex-grow: 1;
+    }
+    .controls {
+        display: flex;
+        gap: 10px;
+        justify-content: flex-end;
+    }
+    .controls button {
+        padding: 10px 15px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 1em;
+    }
+    #add-btn {
+        background-color: #00c853;
+        color: white;
+    }
+    #add-btn:hover {
+        background-color: #009640;
+    }
+    #reset-btn {
+        background-color: #dc3545;
+        color: white;
+    }
+    #reset-btn:hover {
+        background-color: #c82333;
+    }
+    #save-btn {
+        background-color: #ffc107;
+        color: #212529;
+    }
+    #save-btn:hover {
+        background-color: #e0a800;
+    }
+    #selections-summary {
+        margin-top: 20px;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        background-color: #f9f9f9;
+    }
+    #selections-summary h3 {
+        margin-top: 0;
+        color: #007bff;
+    }
+    .selection-item {
+        margin-bottom: 5px;
+    }
+</style>
 </head>
 <body>
     <h1>消費券管理</h1>
@@ -176,32 +188,32 @@
     </div>
 
     <h2>各銀行消費券金額</h2>
-    <div class="balance-container">
-        <div class="bank-balance" id="mpay-balance">
-            <div class="bar-container">
-                <div class="bar" style="height: 0%;">0</div>
-            </div>
-            <div class="bank-name">Mpay</div>
+ <div class="balance-container">
+    <div class="bank-balance" id="mpay-balance">
+        <div class="bar-container">
+            <div class="bar mpay" style="height: 0%;">0</div>
         </div>
-        <div class="bank-balance" id="boc-balance">
-            <div class="bar-container">
-                <div class="bar" style="height: 0%;">0</div>
-            </div>
-            <div class="bank-name">中銀</div>
-        </div>
-        <div class="bank-balance" id="icbc-balance">
-            <div class="bar-container">
-                <div class="bar" style="height: 0%;">0</div>
-            </div>
-            <div class="bank-name">工商</div>
-        </div>
-        <div class="bank-balance" id="taifung-balance">
-            <div class="bar-container">
-                <div class="bar" style="height: 0%;">0</div>
-            </div>
-            <div class="bank-name">大豐</div>
-        </div>
+        <div class="bank-name">Mpay</div>
     </div>
+    <div class="bank-balance" id="boc-balance">
+        <div class="bar-container">
+            <div class="bar boc" style="height: 0%;">0</div>
+        </div>
+        <div class="bank-name">中銀</div>
+    </div>
+    <div class="bank-balance" id="icbc-balance">
+        <div class="bar-container">
+            <div class="bar icbc" style="height: 0%;">0</div>
+        </div>
+        <div class="bank-name">工商</div>
+    </div>
+    <div class="bank-balance" id="taifung-balance">
+        <div class="bar-container">
+            <div class="bar taifung" style="height: 0%;">0</div>
+        </div>
+        <div class="bank-name">大豐</div>
+    </div>
+</div>
 
     <h2>選擇消費券</h2>
     <div class="selection-container">
@@ -247,7 +259,7 @@
             <ul id="selections-list"></ul>
         </div>
     </div>
-
+    
     <script>
                 const bankSelect = document.getElementById('bank-select');
         const amountSelection = document.getElementById('amount-selection');
