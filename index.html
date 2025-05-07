@@ -250,13 +250,12 @@
     </div>
 
     <script>
-        const bankSelect = document.getElementById('bank-select');
+                const bankSelect = document.getElementById('bank-select');
         const amountSelection = document.getElementById('amount-selection');
         const amountButtons = document.querySelectorAll('.amount-buttons button');
         const quantitySelect = document.getElementById('quantity-select');
         const addBtn = document.getElementById('add-btn');
         const resetBtn = document.getElementById('reset-btn');
-        const saveBtn = document.getElementById('save-btn');
         const totalAmountDiv = document.getElementById('total-amount');
         const selectionsSummaryDiv = document.getElementById('selections-summary');
         const selectionsListUl = document.getElementById('selections-list');
@@ -314,7 +313,6 @@
             localStorage.setItem('bankTotals', JSON.stringify(bankTotals));
             localStorage.setItem('bankCouponCounts', JSON.stringify(bankCouponCounts));
             localStorage.setItem('currentSelections', JSON.stringify(currentSelections));
-            alert('數據已儲存！');
         }
 
         // 重設所有數據
@@ -334,6 +332,7 @@
             quantitySelect.value = '1';
             amountButtons.forEach(button => button.classList.remove('selected'));
             localStorage.clear(); // 可選：清除所有本地儲存的數據
+            saveData(); // 在重設後儲存 (清除) 數據
             alert('數據已重設！');
         }
 
@@ -347,6 +346,7 @@
                 quantitySelect.value = '1';
                 amountButtons.forEach(button => button.classList.remove('selected'));
             }
+            saveData(); // 選擇銀行後儲存
         });
 
         amountButtons.forEach(button => {
@@ -354,6 +354,7 @@
                 amountButtons.forEach(btn => btn.classList.remove('selected'));
                 this.classList.add('selected');
                 selectedAmount = parseInt(this.dataset.amount);
+                saveData(); // 選擇金額後儲存
             });
         });
 
@@ -382,15 +383,8 @@
             bankTotals[selectedBank] += itemTotal;
             bankCouponCounts[selectedBank] += quantityToAdd;
             updateBankBalanceBars();
-
-            currentSelections.push({
-                bank: selectedBank,
-                amount: selectedAmount,
-                quantity: quantityToAdd,
-                total: itemTotal
-            });
-
             updateSelectionsSummary();
+            saveData(); // 新增成功後儲存
         });
 
         function updateBankBalanceBars() {
@@ -426,10 +420,10 @@
         }
 
         resetBtn.addEventListener('click', resetData);
-        saveBtn.addEventListener('click', saveData);
 
         // 頁面載入時載入儲存的數據
         loadSavedData();
     </script>
+
 </body>
 </html>
